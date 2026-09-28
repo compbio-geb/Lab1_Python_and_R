@@ -9,6 +9,100 @@ resources:
 These notes follow the Lecture 11 slides. Each demo runs in your browser; R cells use base R only.
 :::
 
+
+## 0 · The coin, the p-value, and the burden of many tests
+
+Before any genomics: three ideas, each with an experiment you can run here.
+
+### A coin flipped 10 times
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+import numpy as np
+rng = np.random.default_rng(1)
+heads = rng.binomial(10, 0.5, size=10000)     # 10,000 experiments of 10 flips
+for k in range(11):
+    print(k, "heads:", (heads == k).mean())
+print("9 or more heads:", (heads >= 9).mean())
+```
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+set.seed(1)
+heads <- rbinom(10000, 10, 0.5)      # 10,000 experiments of 10 flips
+table(heads) / 10000
+mean(heads >= 9)                     # 9 or more heads
+```
+:::
+:::
+
+Nothing about the coin changes between experiments; the spread is what randomness looks like. A read covering a heterozygous site is the same coin: each read comes from one of the two chromosomes.
+
+### Is this coin fair? — the p-value
+
+I flip a coin 10 times and get 9 heads. **Null hypothesis:** the coin is fair. **p-value:** how often a fair coin gives a result at least this extreme (9 or 10 heads, or by symmetry 0 or 1).
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+from scipy import stats
+print(stats.binomtest(9, 10, 0.5).pvalue)      # ≈ 0.021
+```
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+binom.test(9, 10, 0.5)$p.value                  # ≈ 0.021
+```
+:::
+:::
+
+p ≈ 0.02: chance alone does this about twice in a hundred. It is a statement about the *data given the null*, not the probability that the coin is fair.
+
+### Twenty candy colours, 19,271 genes — the burden
+
+Test 20 candy colours for a link to acne when none exists: each test has a 1-in-20 chance of a false alarm, so the chance that *at least one* colour "wins" is 1 − 0.95²⁰ = 64 %. Now do it for every gene:
+
+::: {.two-col}
+::: {}
+<span class="lang-tag py">Python</span>
+```{.pyodide}
+# 19,271 genes, 4 vs 4 samples, NO real difference anywhere
+a = rng.normal(size=(19271, 4)); b = rng.normal(size=(19271, 4))
+p0 = stats.ttest_ind(a, b, axis=1).pvalue
+print("genes with p < 0.05 by chance:", (p0 < 0.05).sum())
+import matplotlib.pyplot as plt
+fig, ax = plt.subplots(figsize=(3.4, 2.6))
+ax.hist(p0, bins=20, color="grey"); ax.axvline(0.05, color="#C00000")
+ax.set_xlabel("p-value under the null"); ax.set_ylabel("genes")
+plt.tight_layout(); plt.show()
+```
+:::
+::: {}
+<span class="lang-tag r">R</span>
+```{.webr}
+#| fig-width: 3.4
+#| fig-height: 2.6
+# 19,271 genes, 4 vs 4 samples, NO real difference anywhere
+p0 <- replicate(19271, t.test(rnorm(4), rnorm(4))$p.value)
+cat("genes with p < 0.05 by chance:", sum(p0 < 0.05), "\n")
+par(mar = c(4, 4, 1, 1))
+hist(p0, breaks = 20, col = "grey85", main = "", xlab = "", ylab = "", axes = FALSE)
+axis(1); axis(2); abline(v = 0.05, col = "#C00000", lwd = 2)
+title(xlab = "p-value under the null", line = 2); title(ylab = "genes", line = 2)
+```
+:::
+:::
+
+Under the null, p-values are spread evenly: about 5 % fall below 0.05 — **800–960 false "discoveries"** with nothing going on. Two ways to pay:
+
+- **Bonferroni** — control the chance of *any* false alarm: threshold 0.05 / 19,271 ≈ 2.6 × 10⁻⁶. Right for 20 candy colours; throws away almost everything in a genome.
+- **False discovery rate (Benjamini–Hochberg, 1995)** — control the *fraction* of false alarms in your list. Sort the p-values; the *k*-th smallest is kept if p₍ₖ₎ ≤ q·k/n. "Of the genes I call, about 5 % are expected to be false" — a promise about the list, not about one gene. `p.adjust(p, "BH")` returns the smallest FDR at which each gene would be kept (DESeq2's `padj`).
+
 ## 1 · Sequencing is sampling
 
 A sequencer does not measure a gene's expression; it **draws reads at random** from a pool of molecules. Every number in genomics is therefore a *count from a random sample*, and every claim needs a probability model.

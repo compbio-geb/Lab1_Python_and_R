@@ -221,7 +221,7 @@
     "href": "notes.html",
     "title": "Lecture 10 · Programming for Biologists: Python and R",
     "section": "",
-    "text": "Read this page after lecture, or use it during the lab as a reference. Each part below corresponds to one part of the slide deck. Press Run Code on any cell; edit it and run again."
+    "text": "The lecture teaches Python first, then R. Here the same steps are shown side by side so you can compare the two languages line by line. Use it after lecture or during the lab. Press Run Code on any cell; edit it and run again."
   },
   {
     "objectID": "notes.html#part-1-why-two-languages",
@@ -285,6 +285,13 @@
     "title": "Lecture 11 · Probability and Statistics for Genomic Data",
     "section": "",
     "text": "These notes follow the Lecture 11 slides. Each demo runs in your browser; R cells use base R only."
+  },
+  {
+    "objectID": "stats.html#the-coin-the-p-value-and-the-burden-of-many-tests",
+    "href": "stats.html#the-coin-the-p-value-and-the-burden-of-many-tests",
+    "title": "Lecture 11 · Probability and Statistics for Genomic Data",
+    "section": "0 · The coin, the p-value, and the burden of many tests",
+    "text": "0 · The coin, the p-value, and the burden of many tests\nBefore any genomics: three ideas, each with an experiment you can run here.\n\nA coin flipped 10 times\n\n\nPython\n\n\n\n\n\n\n\n\nR\n\n\n\n\n\n\n\n\nNothing about the coin changes between experiments; the spread is what randomness looks like. A read covering a heterozygous site is the same coin: each read comes from one of the two chromosomes.\n\n\nIs this coin fair? — the p-value\nI flip a coin 10 times and get 9 heads. Null hypothesis: the coin is fair. p-value: how often a fair coin gives a result at least this extreme (9 or 10 heads, or by symmetry 0 or 1).\n\n\nPython\n\n\n\n\n\n\n\n\nR\n\n\n\n\n\n\n\n\np ≈ 0.02: chance alone does this about twice in a hundred. It is a statement about the data given the null, not the probability that the coin is fair.\n\n\nTwenty candy colours, 19,271 genes — the burden\nTest 20 candy colours for a link to acne when none exists: each test has a 1-in-20 chance of a false alarm, so the chance that at least one colour “wins” is 1 − 0.95²⁰ = 64 %. Now do it for every gene:\n\n\nPython\n\n\n\n\n\n\n\n\nR\n\n\n\n\n\n\n\n\nUnder the null, p-values are spread evenly: about 5 % fall below 0.05 — 800–960 false “discoveries” with nothing going on. Two ways to pay:\n\nBonferroni — control the chance of any false alarm: threshold 0.05 / 19,271 ≈ 2.6 × 10⁻⁶. Right for 20 candy colours; throws away almost everything in a genome.\nFalse discovery rate (Benjamini–Hochberg, 1995) — control the fraction of false alarms in your list. Sort the p-values; the k-th smallest is kept if p₍ₖ₎ ≤ q·k/n. “Of the genes I call, about 5 % are expected to be false” — a promise about the list, not about one gene. p.adjust(p, \"BH\") returns the smallest FDR at which each gene would be kept (DESeq2’s padj)."
   },
   {
     "objectID": "stats.html#sequencing-is-sampling",

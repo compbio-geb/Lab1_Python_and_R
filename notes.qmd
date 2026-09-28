@@ -6,7 +6,7 @@ resources:
 ---
 
 ::: {.callout-tip appearance="simple"}
-Read this page **after** lecture, or use it during the lab as a reference. Each part below corresponds to one part of the slide deck. Press **Run Code** on any cell; edit it and run again.
+The lecture teaches Python first, then R. Here the same steps are shown side by side so you can compare the two languages line by line. Use it after lecture or during the lab. Press **Run Code** on any cell; edit it and run again.
 :::
 
 ## Part 1 · Why two languages?
