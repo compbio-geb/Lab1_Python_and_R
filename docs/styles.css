@@ -17,3 +17,15 @@ code { font-size: 0.95em; }
 .G { color: #E97132; font-weight: 700; } .T { color: #C00000; font-weight: 700; }
 table.rosetta td { vertical-align: top; }
 table.rosetta code { white-space: pre; }
+
+/* Two-column code pages: keep code inside its column, and move "On this page" to a bar that stays at the top */
+.two-col { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.two-col > div { min-width: 0; }
+@media (max-width: 800px) { .two-col { grid-template-columns: minmax(0, 1fr); } }
+@media (min-width: 801px) {
+  body:has(.two-col) #quarto-content.page-columns { display: block; max-width: 1500px; margin-left: auto; margin-right: auto; padding: 0 1.5rem; }
+  body:has(.two-col) #quarto-margin-sidebar { display: block !important; position: sticky; top: 61px; z-index: 900; background: #fff; width: auto; height: auto; max-height: none; overflow: visible; margin: 0; padding: 0.5rem 0 0.4rem; border-bottom: 1px solid #dee2e6; }
+  body:has(.two-col) #TOC > ul { display: flex; flex-wrap: wrap; gap: 0.1rem 1.2rem; border-left: 0; padding-left: 0; margin: 0; }
+  body:has(.two-col) #TOC ul ul { display: none; }
+  body:has(.two-col) #TOC #toc-title { margin-bottom: 0.2rem; }
+}
