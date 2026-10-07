@@ -111,6 +111,7 @@ Fill in the blanks so the cell prints the GC content as a percentage.
 <span class="lang-tag py">Python</span>
 ```{.pyodide}
 #| exercise: ex2a_py
+#| envir: global
 g = cds.count("G")
 c = ______
 gc = (g + c) / ______
@@ -137,6 +138,7 @@ print(round(gc * 100, 1), "%")     # 61.8 %
 <span class="lang-tag r">R</span>
 ```{.webr}
 #| exercise: ex2a_r
+#| envir: global
 bases <- strsplit(cds, "")[[1]]
 gc <- mean(bases %in% ______)
 cat(round(gc * 100, 1), "%\n")
@@ -172,6 +174,7 @@ Write the reverse complement of `cds` and print its first 20 letters.
 <span class="lang-tag py">Python</span>
 ```{.pyodide}
 #| exercise: ex2b_py
+#| envir: global
 complement = {"A": "T", "T": "A", "G": "C", "C": "G"}
 rc = "".join(complement[b] for b in ______)
 print(rc[:20])
@@ -196,6 +199,7 @@ print(rc[:20])          # TCAGGGCCCTGCTTCGCTGC
 <span class="lang-tag r">R</span>
 ```{.webr}
 #| exercise: ex2b_r
+#| envir: global
 complement <- c(A = "T", T = "A", G = "C", C = "G")
 rc <- paste(______(complement[bases]), collapse = "")
 cat(substr(rc, 1, 20), "\n")
@@ -249,6 +253,7 @@ print(protein[:10], "...", len(protein) - 1, "aa")
 
 ```{.pyodide}
 #| exercise: ex2c_py
+#| envir: global
 i = (158 - 1) * 3
 codon = cds[i:i+3]
 print("codon 158:", codon, "->", codon_table[codon])
@@ -294,6 +299,7 @@ cat(substr(protein, 1, 10), "...", nchar(protein) - 1, "aa\n")
 
 ```{.webr}
 #| exercise: ex2c_r
+#| envir: global
 i <- (158 - 1) * 3 + 1
 codon <- substr(cds, i, i + 2)
 cat("codon 158:", codon, "->", codon_table[codon], "\n")
@@ -372,6 +378,7 @@ cat(quals[1], "\n")
 <span class="lang-tag py">Python</span>
 ```{.pyodide}
 #| exercise: ex3a_py
+#| envir: global
 import matplotlib.pyplot as plt
 L = len(seqs[0])
 mean_q = []
@@ -402,6 +409,7 @@ total = sum(ord(q[i]) - 33 for q in quals)
 <span class="lang-tag r">R</span>
 ```{.webr}
 #| exercise: ex3a_r
+#| envir: global
 #| fig-width: 4
 #| fig-height: 2.6
 Q <- t(sapply(quals, function(s) utf8ToInt(s) - ______))
@@ -441,6 +449,7 @@ How many reads contain an `N`? How many contain a run of 15 A's (poly-A tail, or
 <span class="lang-tag py">Python</span>
 ```{.pyodide}
 #| exercise: ex3b_py
+#| envir: global
 n_N = sum("N" in s for s in seqs)
 n_polyA = sum(______ in s for s in seqs)
 gc = [(s.count("G") + s.count("C")) / len(s) for s in seqs]
@@ -464,6 +473,7 @@ n_polyA = sum("A" * 15 in s for s in seqs)     # 6  63  0.474
 <span class="lang-tag r">R</span>
 ```{.webr}
 #| exercise: ex3b_r
+#| envir: global
 n_N <- sum(grepl("N", seqs))
 n_polyA <- sum(grepl(______, seqs))
 gc <- sapply(strsplit(seqs, ""), function(s) mean(s %in% c("G", "C")))
@@ -526,6 +536,7 @@ How many protein-coding genes are on the **minus** strand? Which three protein-c
 <span class="lang-tag py">Python</span>
 ```{.pyodide}
 #| exercise: ex4a_py
+#| envir: global
 pc = genes[genes["gene_type"] == "protein_coding"]
 print((pc["strand"] == ______).sum())
 print(pc.sort_values("length_bp", ascending=______)[["gene_name", "length_bp"]].head(3))
@@ -551,6 +562,7 @@ print(pc.sort_values("length_bp", ascending=False)[["gene_name", "length_bp"]].h
 <span class="lang-tag r">R</span>
 ```{.webr}
 #| exercise: ex4a_r
+#| envir: global
 pc <- genes[genes$gene_type == "protein_coding", ]
 sum(pc$strand == ______)
 head(pc[order(______pc$length_bp), c("gene_name", "length_bp")], 3)
@@ -583,6 +595,7 @@ Join `genes` to `expr` by `gene_id`, then compute, for each `gene_type`, the fra
 <span class="lang-tag py">Python</span>
 ```{.pyodide}
 #| exercise: ex4b_py
+#| envir: global
 m = genes.merge(expr[["gene_id", "TPM"]], on=______)
 frac = m.groupby("gene_type")["TPM"].apply(lambda s: (s > 1).mean())
 print(frac.sort_values(ascending=False).head(5))
@@ -606,6 +619,7 @@ m = genes.merge(expr[["gene_id", "TPM"]], on="gene_id")
 <span class="lang-tag r">R</span>
 ```{.webr}
 #| exercise: ex4b_r
+#| envir: global
 m <- merge(genes, expr[, c("gene_id", "TPM")], by = ______)
 frac <- tapply(m$TPM > 1, m$gene_type, mean)
 head(sort(frac, decreasing = TRUE), 5)
@@ -642,6 +656,7 @@ About **47 % of protein-coding genes** have TPM > 1 in this sample. The top five
 <span class="lang-tag py">Python</span>
 ```{.pyodide}
 #| exercise: ex4c_py
+#| envir: global
 het = mm[(mm["depth"] >= 10) & (mm["alt_fraction"] >= ______) & (mm["alt_fraction"] <= ______)]
 print(len(het))
 print(het[["pos", "ref", "alt", "alt_count", "depth", "gene_name"]])
@@ -666,6 +681,7 @@ het = mm[(mm["depth"] >= 10) & (mm["alt_fraction"] >= 0.3) & (mm["alt_fraction"]
 <span class="lang-tag r">R</span>
 ```{.webr}
 #| exercise: ex4c_r
+#| envir: global
 het <- mm[mm$depth >= 10 & mm$alt_fraction >= ______ & mm$alt_fraction <= ______, ]
 nrow(het)
 het[, c("pos", "ref", "alt", "alt_count", "depth", "gene_name")]
@@ -738,6 +754,7 @@ Gene `ENSG00000152583` (*SPARCL1*).
 <span class="lang-tag py">Python</span>
 ```{.pyodide}
 #| exercise: ex5a_py
+#| envir: global
 g = "ENSG00000152583"
 a = logc.loc[g, ctrl]
 b = logc.loc[g, trt]
@@ -765,6 +782,7 @@ print(stats.ttest_ind(b, a))     # p ≈ 1.6e-05
 <span class="lang-tag r">R</span>
 ```{.webr}
 #| exercise: ex5a_r
+#| envir: global
 #| fig-width: 3
 #| fig-height: 3
 g <- "ENSG00000152583"
@@ -799,6 +817,7 @@ Run a t-test on **every** gene. Count how many have p < 0.05. Then shuffle the s
 <span class="lang-tag py">Python</span>
 ```{.pyodide}
 #| exercise: ex5b_py
+#| envir: global
 p = stats.ttest_ind(logc[trt], logc[ctrl], axis=1).pvalue
 print("p < 0.05:", (p < ______).sum(), "of", len(p))
 rng = np.random.default_rng(1)
@@ -824,6 +843,7 @@ print("p < 0.05:", (p < 0.05).sum(), "of", len(p))    # ~1800 real, ~1200 shuffl
 <span class="lang-tag r">R</span>
 ```{.webr}
 #| exercise: ex5b_r
+#| envir: global
 tt <- function(a, b) tryCatch(t.test(a, b)$p.value, error = function(e) NA)
 p <- apply(logc, 1, function(x) tt(x[trt], x[ctrl]))
 cat("p < 0.05:", sum(p < ______, na.rm = TRUE), "of", length(p), "\n")
