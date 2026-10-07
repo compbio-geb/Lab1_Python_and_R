@@ -720,8 +720,11 @@ Setup: read the airway count matrix and log-transform.
 ::: {}
 <span class="lang-tag py">Python</span>
 ```{.pyodide}
+import warnings
 import numpy as np
+import matplotlib.pyplot as plt
 from scipy import stats
+warnings.filterwarnings("ignore")   # hide SciPy notes about genes with identical counts
 cts  = pd.read_csv("data/airway_counts.tsv", sep="\t", index_col=0)
 meta = pd.read_csv("data/airway_metadata.tsv", sep="\t")
 logc = np.log2(cts + 1)
